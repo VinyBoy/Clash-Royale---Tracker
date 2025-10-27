@@ -380,9 +380,7 @@ furnished to do so, subject to the following conditions:
 ## 👤 Auteur
 
 **Votre Nom**
-- GitHub: [@votre-username](https://github.com/votre-username)
-- LinkedIn: [Votre Profil](https://linkedin.com/in/votre-profil)
-- Portfolio: [votre-site.com](https://votre-site.com)
+- GitHub: [@VinyBoy](https://github.com/VinyBoy)
 
 ## 🙏 Remerciements
 
