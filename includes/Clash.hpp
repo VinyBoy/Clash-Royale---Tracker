@@ -51,6 +51,8 @@ struct PlayerStats
     int warPoints;    // ⚠ doit être rempli après appel /currentriverrace
     bool didWar;
     int apiOrder;  
+    std::string arenaName;
+    int clanChestPoints;
 };
 
 struct RankedEntry
