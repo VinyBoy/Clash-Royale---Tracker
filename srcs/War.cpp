@@ -21,32 +21,65 @@ std::vector<TopClanEntry> top3ClanStrongestWithWar(const std::vector<PlayerStats
 std::unordered_map<std::string, WarParticipant> parseRiverRace(const std::string &jsonStr)
 {
     std::unordered_map<std::string, WarParticipant> map;
-    // stub : aucun participant
-    if (jsonStr.empty()) return map;
-    try {
-        json j = json::parse(jsonStr);
-        // Plusieurs formes possibles selon l'endpoint :
-        // - { "clan": { "members": [...] } }
-        // - { "team": { "participants": [...] } }
-        // - { "participants": [...] }
-        std::vector<json> candidates;
-        if (j.contains("participants") && j["participants"].is_array()) candidates.push_back(j["participants"]);
-        if (j.contains("clan") && j["clan"].contains("participants") && j["clan"]["participants"].is_array()) candidates.push_back(j["clan"]["participants"]);
-        if (j.contains("team") && j["team"].contains("participants") && j["team"]["participants"].is_array()) candidates.push_back(j["team"]["participants"]);
+    if (jsonStr.empty()) {
+        return map;
+    }
 
-        for (auto &arr : candidates) {
-            for (auto &p : arr) {
+    try {
+        const json root = json::parse(jsonStr);
+        std::vector<json> arrays;
+
+        auto addIfArray = [&arrays](const json &node) {
+            if (node.is_array()) {
+                arrays.push_back(node);
+            }
+        };
+
+        if (root.contains("participants")) addIfArray(root["participants"]);
+        if (root.contains("clan") && root["clan"].contains("participants")) addIfArray(root["clan"]["participants"]);
+        if (root.contains("team") && root["team"].contains("participants")) addIfArray(root["team"]["participants"]);
+        if (root.contains("items")) {
+            for (const auto &item : root["items"]) {
+                if (item.contains("participants")) addIfArray(item["participants"]);
+                if (item.contains("clan") && item["clan"].contains("participants")) addIfArray(item["clan"]["participants"]);
+            }
+        }
+
+        for (const auto &arr : arrays) {
+            for (const auto &p : arr) {
                 WarParticipant wp;
                 wp.tag = p.value("tag", std::string());
                 wp.name = p.value("name", std::string());
-                wp.warPoints = p.value("warPoints", p.value("points", 0));
-                wp.attacks = p.value("attacks", 0);
-                if (!wp.tag.empty()) map[wp.tag] = wp;
+
+                if (p.contains("fame")) {
+                    wp.warPoints = p.value("fame", 0);
+                } else if (p.contains("pointsEarned")) {
+                    wp.warPoints = p.value("pointsEarned", 0);
+                } else if (p.contains("points")) {
+                    wp.warPoints = p.value("points", 0);
+                } else {
+                    wp.warPoints = p.value("warPoints", 0);
+                }
+
+                if (p.contains("decksUsed")) {
+                    wp.attacks = p.value("decksUsed", 0);
+                } else if (p.contains("decksUsedToday")) {
+                    wp.attacks = p.value("decksUsedToday", 0);
+                } else if (p.contains("boatAttacks")) {
+                    wp.attacks = p.value("boatAttacks", 0);
+                } else {
+                    wp.attacks = p.value("attacks", 0);
+                }
+
+                if (!wp.tag.empty()) {
+                    map[wp.tag] = wp;
+                }
             }
         }
-    } catch (...) {
-        // parsing failed -> retourner map vide
+    } catch (const std::exception &e) {
+        std::cerr << "[WARN] parseRiverRace JSON error: " << e.what() << '\n';
     }
+
     return map;
 }
 

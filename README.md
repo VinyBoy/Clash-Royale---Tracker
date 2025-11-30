@@ -136,6 +136,25 @@ source .env
 echo ".env" >> .gitignore
 ```
 
+### Activer l'envoi automatique par email (optionnel)
+
+Le programme peut expédier chaque rapport par SMTP juste après leur génération. Exportez les variables suivantes avant d'exécuter le binaire :
+
+```bash
+export SMTP_HOST="smtp.example.com"   # hôte SMTP
+export SMTP_PORT="587"               # facultatif, sinon 25
+export SMTP_USER="bot@example.com"   # login SMTP
+export SMTP_PASS="app-password"      # mot de passe / App password
+export SMTP_FROM="Clan Tracker <bot@example.com>"
+export SMTP_TO="example@mail.com"  # ou liste séparée par des virgules
+```
+
+Notes :
+- Utilisez un **app password** (ou mot de passe spécifique) si votre fournisseur l'exige (Gmail, Outlook, etc.).
+- Si l'une des variables manque, l'envoi est simplement ignoré et un warning apparaît dans la sortie.
+- `SMTP_PORT` est optionnel ; ajoutez `465` pour SMTPS si votre relais le demande (libcurl détecte le schéma `smtp://`).
+- Pour tester sans expédier, laissez les variables non définies : les rapports sont toujours écrits sur disque.
+
 ### Configurer le tag du clan
 
 Modifiez dans `srcs/main.cpp` (ligne ~17) :

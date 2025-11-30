@@ -133,3 +133,6 @@ std::vector<RankedEntry>	top3ByWar(const std::vector<PlayerStats>& v);
 std::vector<KickMember> 	findKickList(const std::vector<PlayerStats> &v);
 void 						ensureOutputFolder();
 std::string 				getCurrentDate();
+std::string             getCurrentDateTimeStamp();
+bool                    sendReportEmail(const std::string &publicReportPath,
+                                        const std::string &privateReportPath);

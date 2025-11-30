@@ -33,8 +33,12 @@ int main(int argc, char **argv)
         }
 
         ensureOutputFolder();
-    std::string pub;
-    std::string priv;
+        const std::string timestampFolder = getCurrentDateTimeStamp();
+        const std::string baseFolder = "files/" + timestampFolder;
+        std::filesystem::create_directories(baseFolder);
+
+    	std::string pub;
+    	std::string priv;
     try {
         pub = MakePublicReport(players);
     } catch (const std::bad_alloc &e) {
@@ -55,9 +59,8 @@ int main(int argc, char **argv)
     }
 
         std::string date = getCurrentDate();
-        std::filesystem::create_directories("files");
-        std::string pubPath = "files/rapport_public_" + date + ".txt";
-        std::string privPath = "files/rapport_prive_" + date + ".txt";
+        std::string pubPath = baseFolder + "/rapport_public_" + date + ".txt";
+        std::string privPath = baseFolder + "/rapport_prive_" + date + ".txt";
 
     
     std::ofstream ofs(pubPath);
@@ -70,6 +73,7 @@ int main(int argc, char **argv)
     
 
         std::cout << "Rapports générés :\n  - " << pubPath << "\n  - " << privPath << std::endl;
+        sendReportEmail(pubPath, privPath);
         // Afficher un résumé console des stats (top 3 trophées, top guerre, top donateurs)
         std::cout << "\nRésumé rapide :\n";
         // Top trophées - sélection O(n) sans copier tout le vecteur
