@@ -95,6 +95,7 @@ bool sendReportEmail(const std::string &publicReportPath,
 
     UploadStatus upload{payload.c_str(), payload.size()};
 
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
     curl_easy_setopt(curl, CURLOPT_URL, smtpUrl.c_str());
     curl_easy_setopt(curl, CURLOPT_USE_SSL, static_cast<long>(CURLUSESSL_ALL));
     curl_easy_setopt(curl, CURLOPT_CAINFO, "/etc/ssl/certs/ca-certificates.crt"); // trust store for STARTTLS
